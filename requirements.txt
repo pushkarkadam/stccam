@@ -1,0 +1,9 @@
+harversters
+opencv-python
+numpy
+matplotlib
+notebook
+sphinx
+open3d
+streamlit
+plotly
