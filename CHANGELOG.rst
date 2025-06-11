@@ -11,3 +11,10 @@ and this project adheres to `Semantic Versioning`_.
 
 [Unreleased]
 ------------
+
+Added
+^^^^^
+- Image capture function for capturing image from PoE camera.
+- Image capture function for single USB camera.
+- Image capture function for stereo system.
+- Example code files added for USB and stereo capture function.
