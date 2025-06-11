@@ -5,6 +5,7 @@ import cv2
 from genicam.gentl import TimeoutException
 import sys
 import os
+import time
 
 
 def capture_image(genTL_path, resolution=(1920, 1080)):
