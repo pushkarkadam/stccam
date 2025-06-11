@@ -151,6 +151,7 @@ def capture_usb_image(genTL_path,
     ia.remote_device.node_map.PixelFormat.value = pixel_format_value
 
     ia.start()
+    time.sleep(1)
 
     with ia.fetch() as buffer:
         component = buffer.payload.components[0]
