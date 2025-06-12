@@ -8,8 +8,9 @@ import os
 import time
 
 
-def capture_image(genTL_path, resolution=(1920, 1080)):
-    """Captures images
+def capture_poe_image(genTL_path, resolution=(1920, 1080)):
+    """Captures images.
+    This function is developed to work with PoE camera.
 
     Parameters
     ----------
@@ -29,8 +30,8 @@ def capture_image(genTL_path, resolution=(1920, 1080)):
 
     Examples
     --------
-    >>> from stccam import *
-    >>> image = capture_image('/path/to/gentl_file.cti', (1920, 1080))
+    >>> from stccam import capture
+    >>> image = capture.capture_poe_image('/path/to/gentl_file.cti', (1920, 1080))
     
     """
     # Extracting the resolution of the image
@@ -75,7 +76,7 @@ def capture_usb_image(genTL_path,
                       pixel_format_value='BayerRG8', 
                       image_type=cv2.COLOR_BayerBG2RGB, 
                       save_path=''):
-    """Captures images for STC USB camera.
+    r"""Captures images for STC USB camera.
 
     Parameters
     ----------
@@ -90,22 +91,7 @@ def capture_usb_image(genTL_path,
     pixel_format_value: str
         Pixel format value for the device.
         This is different for every device.
-        A list of available value can be obtained by using the following code:
-
-        .. code-block::python
-
-            from harvesters.core import Harvester
-            h = Harvester()
-            h.add_file('/path/to/gentl_file.cti')
-            h.update()
-            ia = h.create(0)
-            print(ia.remote_device.node_map.PixelFormat.symbolics)
-
-        A tuple will be printed out as follows:
-
-        .. code-block::
-
-            ('BayerRG8', 'BayerRG10', 'BayerRG10p', 'BayerRG12', 'BayerRG12p')
+        Options include: ``('BayerRG8', 'BayerRG10', 'BayerRG10p', 'BayerRG12', 'BayerRG12p')``
     image_type: int, default ``cv2.COLOR_BayerBG2RGB``
         This will convert the buffer stream from Bayer to RGB.
         Other option include ``cv2.COLOR_BayerBG2BGR``
@@ -121,8 +107,8 @@ def capture_usb_image(genTL_path,
 
     Examples
     --------
-    >>> from stccam import *
-    >>> image = capture_image('/path/to/gentl_file.cti', (1920, 1080))
+    >>> from stccam import capture
+    >>> image = capture.capture_usb_image('/path/to/gentl_file.cti', (1920, 1080))
     
     """
     # Extracting the resolution of the image
@@ -185,6 +171,7 @@ def capture_stereo(genTL_path,
                    save_path=''
                   ):
     """Captures stereo image.
+    This function can be only be used with STC USB camera.
     
     Parameters
     ----------
@@ -202,22 +189,7 @@ def capture_stereo(genTL_path,
     pixel_format_value: str
         Pixel format value for the device.
         This is different for every device.
-        A list of available value can be obtained by using the following code:
-
-        .. code-block::python
-
-            from harvesters.core import Harvester
-            h = Harvester()
-            h.add_file('/path/to/gentl_file.cti')
-            h.update()
-            ia = h.create(0)
-            print(ia.remote_device.node_map.PixelFormat.symbolics)
-
-        A tuple will be printed out as follows:
-
-        .. code-block::
-
-            ('BayerRG8', 'BayerRG10', 'BayerRG10p', 'BayerRG12', 'BayerRG12p')
+        Options: ``('BayerRG8', 'BayerRG10', 'BayerRG10p', 'BayerRG12', 'BayerRG12p')``
     image_type: int, default ``cv2.COLOR_BayerBG2RGB``
         This will convert the buffer stream from Bayer to RGB.
         Other option include ``cv2.COLOR_BayerBG2BGR``
@@ -233,8 +205,8 @@ def capture_stereo(genTL_path,
 
     Examples
     --------
-    >>> from stccam import *
-    >>> image = capture_image('/path/to/gentl_file.cti', (1920, 1080))
+    >>> from stccam import capture
+    >>> image = capture.capture_stereo('/path/to/gentl_file.cti', (1920, 1080))
     
     """
     # Extracting the resolution of the image
