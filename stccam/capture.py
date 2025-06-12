@@ -288,3 +288,145 @@ def capture_stereo(genTL_path,
         cv2.imwrite(right_save_path, stereo_images[1])
 
     return stereo_images
+
+def capture_stereo_calibration(genTL_path, 
+                               cam_serial = {'left': '24MB632', 'right': '24MB633'},
+                               resolution=(1920, 1080),
+                               pixel_format_value='BayerRG8',
+                               image_type=cv2.COLOR_BayerBG2RGB,
+                               save_path=''):
+    """Captures images for stereo calibration.
+
+    Parameters
+    ----------
+    genTL_path: str
+        Path where the ``.cti`` file from the camera SDK is located.
+        For STC camera, this file is located at ``/opt/sentech/lib/<filename>.cti``
+        for Linux OS.
+    cam_serial: dict, default ``{'left': '24MB632', 'right': '24MB633'}``
+        A dictionary of serial number for the camera that maps the left and right of the stereo
+        to the serial number.
+    resolution: tuple
+        Image resolution as a tuple ``(width, height)``
+        This should be more than the mininum resolution and less than the maximum resolution
+        the camera can support.
+    pixel_format_value: str
+        Pixel format value for the device.
+        This is different for every device.
+        Options: ``('BayerRG8', 'BayerRG10', 'BayerRG10p', 'BayerRG12', 'BayerRG12p')``
+    image_type: int, default ``cv2.COLOR_BayerBG2RGB``
+        This will convert the buffer stream from Bayer to RGB.
+        Other option include ``cv2.COLOR_BayerBG2BGR``
+    save_path: str, default ``''``
+        Path to save the image. Also include the image name.
+        When ``save_path`` is empty string, then it will not save the image.
+        Example: ``'~/Documents/image.png'``
+            
+    Returns
+    -------
+    numpy.ndarray
+        A numpy image.
+
+    Examples
+    --------
+    >>> from stccam import capture
+    >>> capture.capture_stereo_calibration('/path/to/gentl_file.cti', (1920, 1080))
+    
+    """
+
+    # Extracting the resolution of the image
+    width, height = resolution
+    
+    # Creating harvester object
+    h = Harvester()
+    
+    # Adding the genTL path
+    h.add_file(genTL_path)
+    
+    h.update()
+    
+    devices = h.device_info_list
+    
+    if not len(devices):
+        print('Camera not found')
+        sys.exit(1)
+    
+    print("Following devices detected")
+    for device in devices:
+        print(device.display_name)
+    
+    # Checks if two cameras are detected
+    try:
+        assert(len(devices) == 2)
+    except Exception as e:
+        print(e)
+        print(f"Cameras found {len(devices)} != 2")
+    
+    # date
+    ct = datetime.datetime.now()
+    date = ct.strftime("%d-%m-%Y-%H-%M")
+    
+    # Make directory
+    path_left = os.path.join(save_path, date, 'stereo_left')
+    path_right = os.path.join(save_path, date, 'stereo_right')
+    
+    print(f"Creating directories: \n{path_left}\n{path_right}")
+    os.makedirs(path_left, exist_ok=True)
+    os.makedirs(path_right, exist_ok=True)
+    
+    # Creating image acquirer for both left and right camera
+    ias = [h.create(search_key={'serial_number': v}) for v in cam_serial.values()]
+    
+    for ia in ias:
+        ia.remote_device.node_map.Width.value = width
+        ia.remote_device.node_map.Height.value = height
+        ia.remote_device.node_map.PixelFormat.value = pixel_format_value
+    
+        ia.start()
+    
+    # creating two separe image acquirer for left and right camera
+    ia_left, ia_right = ias
+    
+    num_images = 0
+    
+    try:
+        while True:
+            with ia_left.fetch() as buffer_left, ia_right.fetch() as buffer_right:
+                # left image
+                component_left = buffer_left.payload.components[0]
+                image_data_left = component_left.data.reshape(
+                    component_left.height, component_left.width
+                )
+                
+                image_left = cv2.cvtColor(image_data_left, image_type)
+        
+                # right image
+                component_right = buffer_right.payload.components[0]
+                image_data_right = component_right.data.reshape(
+                    component_right.height, component_right.width
+                )
+                
+                image_right = cv2.cvtColor(image_data_right, image_type)
+        
+                cv2.imshow('left_camera', image_left)
+                cv2.imshow('right_camera', image_right)
+        
+                key = cv2.waitKey(5)
+        
+                # Check if ESC key is pressed whose ASCII value is 27
+                if key == 27:
+                    break
+                elif key == ord('s'):
+                    cv2.imwrite(os.path.join(path_left, 'imageL_' + str(num_images) + '.png'), image_left)
+                    cv2.imwrite(os.path.join(path_right, 'imageR_' + str(num_images) + '.png') , image_right)
+                    print('\033[92m' + "Images saved!")
+                    num_images += 1
+    except KeyboardInterrupt:
+        print("Interupted by user.")
+    
+    finally:
+        for ia in ias:
+            ia.stop()
+            ia.destroy()
+        h.reset()
+        cv2.destroyAllWindows()
