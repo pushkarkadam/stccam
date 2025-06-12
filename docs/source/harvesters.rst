@@ -5,6 +5,11 @@ Harvesters documentation
 This document will keep a track about different processes 
 and problems encountered during using Harvesters module.
 
+Refer to `harvesters`_ repository and `documentation`_ for more information.
+
+.. _harvesters: https://github.com/genicam/harvesters
+.. _documentation: https://harvesters.readthedocs.io/en/latest/?badge=latest 
+
 Pixel type information 
 ----------------------
 
