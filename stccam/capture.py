@@ -320,7 +320,7 @@ def capture_stereo_calibration(genTL_path,
     save_path: str, default ``''``
         Path to save the image. Also include the image name.
         When ``save_path`` is empty string, then it will not save the image.
-        Example: ``'~/Documents/image.png'``
+        This will create two directories: ``save_path/<date time>/stereo_left`` and ``save_path/<date time>/stereo_right``
             
     Returns
     -------
