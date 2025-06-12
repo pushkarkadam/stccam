@@ -18,3 +18,5 @@ Added
 - Image capture function for single USB camera.
 - Image capture function for stereo system.
 - Example code files added for USB and stereo capture function.
+- Sphinx documentation added.
+- Unit tests added for usb camera and stereo rig.
