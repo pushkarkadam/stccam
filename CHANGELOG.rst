@@ -21,3 +21,4 @@ Added
 - Sphinx documentation added.
 - Unit tests added for usb camera and stereo rig.
 - Function to collect images for stereo calibration added.
+- Live stream function added.
