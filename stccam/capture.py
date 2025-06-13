@@ -6,6 +6,7 @@ from genicam.gentl import TimeoutException
 import sys
 import os
 import time
+import datetime
 
 
 def capture_poe_image(genTL_path, resolution=(1920, 1080)):
