@@ -437,7 +437,8 @@ def live_stream_stereo(genTL_path,
                        resolution=(1920, 1080),
                        pixel_format_value='BayerRG8',
                        image_type=cv2.COLOR_BayerBG2RGB,
-                       show_combined=True):
+                       show_combined=True,
+                       combined_res=(1280, 720)):
     """Live streaming from stereo setup.
     
     Parameters
@@ -462,8 +463,8 @@ def live_stream_stereo(genTL_path,
         Other option include ``cv2.COLOR_BayerBG2BGR``
     show_combined: bool, default ``True``
         Shows the stereo images combined.
-        Due to the large size of the image input, the image is resized to ``(640, 480)``
-        resolution for each images from the stereo setup.
+    combined_res: tuple, default ``(1280, 720)``
+        Resolution to view while live streaming in combined mode.
 
     Examples
     --------
@@ -535,8 +536,8 @@ def live_stream_stereo(genTL_path,
                 image_right = cv2.cvtColor(image_data_right, image_type)
 
                 if show_combined:
-                    imgL = cv2.resize(image_left, (640, 480))
-                    imgR = cv2.resize(image_right, (640, 480))
+                    imgL = cv2.resize(image_left, combined_res)
+                    imgR = cv2.resize(image_right, combined_res)
                     stereo_image = np.hstack((imgL, imgR))
                     cv2.imshow("stereo", stereo_image)
 
