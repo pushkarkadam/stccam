@@ -241,43 +241,44 @@ def capture_stereo(genTL_path,
     # Storing stereo images left, right
     stereo_images = []
 
-    for cam_side, cam in cam_serial.items():
-        print(f'Extracting {cam_side} camera: {cam}')
-        
-        ia = h.create(search_key={'serial_number': cam})
+    # Creating image acquirer for both left and right camera
+    ias = [h.create(search_key={'serial_number': v}) for v in cam_serial.values()]
 
+    for ia in ias:
         ia.remote_device.node_map.Width.value = width
         ia.remote_device.node_map.Height.value = height
         ia.remote_device.node_map.PixelFormat.value = pixel_format_value
     
         ia.start()
+
+    # creating two separe image acquirer for left and right camera
+    ia_left, ia_right = ias
+
+    with ia_left.fetch() as buffer_left, ia_right.fetch() as buffer_right:
+        # left image
+        component_left = buffer_left.payload.components[0]
+        image_data_left = component_left.data.reshape(
+            component_left.height, component_left.width
+        )
         
-        # Delaying by a second to ensure the right image appears
-        time.sleep(1)
+        image_left = cv2.cvtColor(image_data_left, image_type)
+
+        stereo_images.append(image_left)
+
+        # right image
+        component_right = buffer_right.payload.components[0]
+        image_data_right = component_right.data.reshape(
+            component_right.height, component_right.width
+        )
+        
+        image_right = cv2.cvtColor(image_data_right, image_type)
+
+        stereo_images.append(image_right)
     
-        with ia.fetch() as buffer:
-            component = buffer.payload.components[0]
-    
-            image_data = component.data.reshape(
-                component.height, component.width
-            )
-    
-        # Waiting for 0.1 seconds before stopping.
-        # This provides enough time for the image acquisition
-        time.sleep(0.1)
-    
-        # closing stream
+    for ia in ias:
         ia.stop()
         ia.destroy()
-        
     
-        # Converting bayer image to RGB image.
-        image = cv2.cvtColor(image_data, image_type)
-
-        # Appending to stereo image
-        stereo_images.append(image)
-    
-    # Resetting the harvester object 
     h.reset()
 
     if save_path:
