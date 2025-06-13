@@ -21,6 +21,7 @@ Added
 - Unit tests added for usb camera and stereo rig.
 - Function to collect images for stereo calibration added.
 - Live stream function added.
+- Stereo calibration function added.
 - Example code files added for:
     - USB capture function
     - Stereo capture function
