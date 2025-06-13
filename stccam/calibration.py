@@ -26,7 +26,7 @@ def stereo_calibration(file_path,
     ----------
     file_path: str
         Path of the file.
-    chessboard_size: str
+    chessboard_size: tuple
         Size of the grid of the chessboard.
         For a chess board of ``9 x 8`` pattern, use the input as ``(8, 7)``.
     square_size: float, default ``0.03``.
@@ -57,6 +57,11 @@ def stereo_calibration(file_path,
         Reprojection error.
         A value less than ``1`` is acceptable. 
         A good result would be to have half a pixel i.e. ``0.5`` error.
+
+    Examples
+    --------
+    >>> from stccam import calibration
+    >>> calibration.stereo_calibration(file_path='../data/calib/13-06-2025-15-20', chessboard_size=(8,4), square_size=0.03, param_save_path='../data/calib/13-06-2025-15-20', save_rendered='../data/calib/13-06-2025-15-20/rendered')
     
     """
 
